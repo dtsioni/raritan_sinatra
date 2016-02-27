@@ -5,4 +5,6 @@ gem "json"
 gem "rack-test", :group => :test
 gem "activerecord"
 gem "sinatra-activerecord"
+gem "rake"
 gem "pg"
+

@@ -1,6 +1,16 @@
 development:
   adapter: postgresql
-  database: development
-  username: <%= ENV['PG_USER'] %>
-  password: <%= ENV['PG_PASS'] %>
+  encoding: unicode
+  database: raritan_development
   host: localhost
+  pool: 5
+  user: superhot
+  password: password
+
+test:
+  adapter: postgresql
+  encoding: unicode
+  database: raritan_test
+  pool: 5
+  host: localhost
+  password:

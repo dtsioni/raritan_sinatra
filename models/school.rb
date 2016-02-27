@@ -1,4 +1,2 @@
-class School
-  attr_accessor :name, :departments
-
-  def initialize(args)
+class School < ActiveRecord::Base
+end
