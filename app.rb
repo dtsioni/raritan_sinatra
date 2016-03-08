@@ -1,9 +1,29 @@
 require 'sinatra'
 require 'sinatra/activerecord'
-require './config/environments' #database configuration
+# load in models
+require './models/school'
+require './models/department'
+require './models/professor'
+require './models/score'
+# database config
+require './config/environments'
 
-get '/:school' do
+# our routes
+# post a new score for this professor
+post '/:school/:department/:professor' do
+end
+# return all professors from a department
+get '/:school/:department/professors' do
   content_type :json
   school = params[:school]
   { school: school }.to_json
 end
+# return all departments from a school
+get '/:school/departments' do
+end
+# return all professors from a school
+get '/:school/professors' do
+end
+
+
+
