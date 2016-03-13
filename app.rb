@@ -25,7 +25,6 @@ get '/:school/departments' do
   School.find_by(name: params[:school]).departments.each do |foo|
     puts foo.name
   end
-  return "touch my grundle?"
 end
 # return all professors from a school
 get '/:school/professors' do
