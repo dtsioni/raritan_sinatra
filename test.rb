@@ -5,7 +5,7 @@ require 'rack/test'
 require_relative 'app.rb'
 
 include Rack::Test::Methods
-set :database, {adapter: "postgresql", database: "raritan_test"}
+
 def app
   Sinatra::Application
 end
