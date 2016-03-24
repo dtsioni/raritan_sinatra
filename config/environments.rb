@@ -4,12 +4,12 @@ configure :test do
 end
 
 configure :development do
-  set :database, 'postgres:///raritan_development'
+  set :database, 'postgres:///raritan_dev'
   set :show_exceptions, true
 end
 
 configure :production do
-  db = URI.parse('postgres:///raritan_production')
+  db = URI.parse('postgres:///raritan_prod')
   ActiveRecord::Base.establish_connection(
     :adapter  => db.scheme == 'postgres' ? 'postgresql' : db.scheme,
     :host     => db.host,

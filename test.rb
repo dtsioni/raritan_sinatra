@@ -18,18 +18,9 @@ before do
   school = School.create(@school_params)
   dept1 = Department.create(@dept_cs_params)
   dept2 = Department.create(@dept_math_params)
-  dept1.school = school
-  dept2.school = school
-  dept1.save
-  dept2.save
-  school.departments << dept1
-  school.departments << dept2
-  school.save
 end
 
 describe "Department" do
-
-
   it "should return json" do
     get '/Rutgers%20University%20-%20New%20Brunswick/departments'
     last_response.headers['Content-Type'].must_equal 'application/json'
@@ -37,7 +28,7 @@ describe "Department" do
 
   it "should return a list of departments" do
     get 'Rutgers%20University%20-%20New%20Brunswick/departments'
-    departments_info = { departments: ["Computer Science", "Math"] }
+    departments_info = { "Rutgers University - New Brunswick" => ["Computer Science", "Math"] }
     last_response.body.must_equal departments_info.to_json
   end
 end
