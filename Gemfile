@@ -7,8 +7,9 @@ gem "activerecord"
 gem "sinatra-activerecord"
 gem "rake"
 
-group :development do
+group :development, :test do
   gem 'sqlite3'
+  gem 'database_cleaner'
 end
 
 group :production do

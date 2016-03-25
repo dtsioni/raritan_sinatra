@@ -1,11 +1,9 @@
 configure :test do
   set :database, 'postgres:///raritan_test'
-  set :show_exceptions, true
 end
 
 configure :development do
   set :database, 'postgres:///raritan_dev'
-  set :show_exceptions, true
 end
 
 configure :production do
