@@ -3,14 +3,19 @@ ENV['RACK_ENV'] = 'test'
 require 'minitest/autorun'
 require 'rack/test'
 require 'database_cleaner'
+require 'multi_json'
+require 'mocha/setup'
 require_relative 'app.rb'
 
 include Rack::Test::Methods
 set :environment, :test
+
 def app
   Sinatra::Application
 end
+
 DatabaseCleaner.strategy = :truncation
+
 before do
   DatabaseCleaner.clean
   @school_params = { name: "Rutgers University - New Brunswick" }
@@ -68,10 +73,9 @@ describe "Professors" do
 end
 
 describe "Scores" do
+  before { post("/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Sesh%20Venugopal", {foo: "bar"}, { "CONTENT_TYPE" => "application/json" }) }
   it "should post a score" do
-    post_json("/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Sesh%20Venugopal", {
-
-      })
+    last_response.status.must_equal 404
   end
 
   let(:resp) { json_parse(last_response.body) }
