@@ -36,7 +36,21 @@ def parse_name(string)
   end
 end
 #takes hash of name
-#creates an alias, returns professor if theres a match
-#creates a professor and alias, and returns it if theres no match
-def match_name(name)
+#returns an array of all professors that might approximately be this name
+def match_name(name, dept)
+  #is it a perfect match?
+  prof = dept.professors.where(name)
+  return prof if prof
+  #if we have a first name with a middle initial, try without the middle initial
+  if name.match(/^[a-z]+\s[a-z]$/)
+    prof = dept.professors.where(first_name: name.chop.chop, last_name: name[:last_name])
+  end
+  return prof if prof
+  #try just the first initial
+  prof = dept.professors.where(first_name: name[:first_name][0].chr.to_s, last_name: name[:last_name])
+  return prof if prof
+  #try just the last name
+  prof = dept.professors.where(last_name: name[:last_name])
+  return prof if prof
+  return nil
 end

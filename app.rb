@@ -33,19 +33,38 @@ post '/:school/:department/:professor' do
   aliases.select{ |prof| prof.department == dept }
   aliases.select{ |prof| prof.department.school == school }
 
-  #is this ambigious?
   if aliases.count == 1
     #we found the professor
     prof = aliases.first.professor
   else
+    #either ambigious or not found
     #hopefully we'll have better luck later
     prof = nil
   end
 
-  #split string into hash of first name (with middle initial) and last name
   if prof.nil?
     name = parse_name(params[:professor])
-    prof = match_name(name)
+    professors = match_name(name, dept)
+  end
+  #ambiguity
+  if professors.count > 1
+    status 503
+    return nil
+  end
+  #matched
+  if professors.count == 1
+    prof = professors.first
+    Alias.create(name: params[:name], prof.id)
+  end
+
+  if professors.count == 0
+    prof = Professor.new(first_name: name[:first_name], last_name: name[:last_name], department_id: dept.id)
+    if prof.save
+      Alias.create(name: params[:professor], professor_id: prof.id)
+    else
+      status 400
+      return nil
+    end
   end
 
   if prof.present?
