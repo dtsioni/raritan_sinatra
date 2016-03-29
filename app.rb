@@ -54,7 +54,7 @@ post '/:school/:department/:professor' do
   #matched
   if professors.count == 1
     prof = professors.first
-    Alias.create(name: params[:name], prof.id)
+    Alias.create(name: params[:name], professor_id: prof.id)
   end
 
   if professors.count == 0
