@@ -26,10 +26,27 @@ post '/:school/:department/:professor' do
     status 400
     return nil
   end
-  #hash of name
-  name = parse_name(params[:professor])
+  #check the alias table
+  aliases = Alias.where(name: params[:professor])
+  aliases.map{ |pseudo| pseudo.professor }
+  #filter for professors that are in the right department and school
+  aliases.select{ |prof| prof.department == dept }
+  aliases.select{ |prof| prof.department.school == school }
 
-  prof = dept.professors.find_by(name)
+  #is this ambigious?
+  if aliases.count == 1
+    #we found the professor
+    prof = aliases.first.professor
+  else
+    #hopefully we'll have better luck later
+    prof = nil
+  end
+
+  #split string into hash of first name (with middle initial) and last name
+  if prof.nil?
+    name = parse_name(params[:professor])
+    prof = match_name(name)
+  end
 
   if prof.present?
     vote = Score.new(score.merge({professor_id: prof.id}))

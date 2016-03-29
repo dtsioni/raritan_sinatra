@@ -35,3 +35,8 @@ def parse_name(string)
     return name_hash
   end
 end
+#takes hash of name
+#creates an alias, returns professor if theres a match
+#creates a professor and alias, and returns it if theres no match
+def match_name(name)
+end
