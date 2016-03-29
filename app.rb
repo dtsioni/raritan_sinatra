@@ -8,11 +8,40 @@ require './models/score'
 require './models/alias'
 # database config
 require './config/environments'
+require './name_helper'
 # our routes
 # post a new score for this professor
 post '/:school/:department/:professor' do
+  #grab data from route
   data = JSON.parse(request.body.read)
   score = data["score"]
+
+  school = School.find_or_create_by(name: params[:school])
+  if school.nil?
+    status 400
+    return nil
+  end
+  dept = school.departments.find_or_create_by(name: params[:department])
+  if dept.nil?
+    status 400
+    return nil
+  end
+  #hash of name
+  name = parse_name(params[:professor])
+  puts "==============================="
+  puts name
+  prof = dept.professors.find_by(name)
+
+  if prof.present?
+    vote = Score.new(score.merge({professor_id: prof.id}))
+    if vote.save
+      status 200
+      return prof.score
+    else
+      status 400
+      return nil
+    end
+  end
 end
 # return all professors from a department
 get '/:school/:department/professors' do
