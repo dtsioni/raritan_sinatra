@@ -5,12 +5,14 @@ require './models/school'
 require './models/department'
 require './models/professor'
 require './models/score'
+require './models/alias'
 # database config
 require './config/environments'
 # our routes
 # post a new score for this professor
 post '/:school/:department/:professor' do
-  status 200
+  data = JSON.parse(request.body.read)
+  score = data["score"]
 end
 # return all professors from a department
 get '/:school/:department/professors' do
