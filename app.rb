@@ -28,8 +28,7 @@ post '/:school/:department/:professor' do
   end
   #hash of name
   name = parse_name(params[:professor])
-  puts "==============================="
-  puts name
+
   prof = dept.professors.find_by(name)
 
   if prof.present?

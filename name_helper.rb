@@ -14,8 +14,6 @@ def parse_name(string)
   #LAST_NAME, FIRST_NAME MIDDLE_INITIAL
   if name.match(/^[a-z]+,\s*[a-z]+\s*[a-z]?$/)
     qux = name.split(',').map{ |n| n.strip }
-    puts "??????????????????1"
-    puts qux
     name_hash[:first_name] = qux.second
     name_hash[:last_name] = qux.first
     return name_hash
@@ -23,10 +21,7 @@ def parse_name(string)
   #FIRST_NAME LAST_NAME
   #FIRST_INITIAL LAST_NAME
   if name.match(/^[a-z]+\s*[a-z]+$/)
-    puts name.split(/\s+/)
     qux = name.split(/\s+/).map{ |n| n.strip }
-    puts "??????????????????2"
-    puts qux
     name_hash[:first_name] = qux.first
     name_hash[:last_name] = qux.second
     return name_hash
@@ -35,8 +30,6 @@ def parse_name(string)
   #FIRST_INITIAL MIDDLE_INITIAL LAST_NAME
   if name.match(/^[a-z]+\s*[a-z]?\s*[a-z]+$/)
     qux = name.split(/\s+/).map{ |n| n.strip }
-    puts "??????????????????3"
-    puts qux
     name_hash[:first_name] = qux.first + " " + qux.second
     name_hash[:last_name] = qux.third
     return name_hash
