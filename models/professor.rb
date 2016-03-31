@@ -1,4 +1,5 @@
 class Professor < ActiveRecord::Base
+  #all professor names are lower case
   belongs_to :department
   has_many :scores
   has_many :aliases

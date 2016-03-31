@@ -21,9 +21,9 @@ before do
   @school_params = { name: "Rutgers University - New Brunswick" }
   @dept_cs_params = { name: "Computer Science" }
   @dept_math_params = { name: "Math" }
-  @cs_prof1_params = { first_name: "Sesh", last_name: "Venugopal" }
-  @cs_prof2_params = { first_name: "Andrew", last_name: "Tjang" }
-  @math_prof1_params = { first_name: "Vladimir", last_name: "Shtelen" }
+  @cs_prof1_params = { first_name: "sesh", last_name: "venugopal" }
+  @cs_prof2_params = { first_name: "andrew", last_name: "tjang" }
+  @math_prof1_params = { first_name: "vladimir", last_name: "shtelen" }
 
   school = School.create(@school_params)
   dept_cs = Department.create(@dept_cs_params)
@@ -61,13 +61,13 @@ describe "Professors" do
 
   it "should return a list of professors from Computer Science" do
     get '/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/professors'
-    professors_info = { professors: ["Sesh Venugopal", "Andrew Tjang"] }
+    professors_info = { professors: ["sesh venugopal", "andrew tjang"] }
     last_response.body.must_equal professors_info.to_json
   end
 
   it "should return a list of all professors" do
     get '/Rutgers%20University%20-%20New%20Brunswick/professors'
-    professors_info = { professors: ["Sesh Venugopal", "Andrew Tjang", "Vladimir Shtelen"] }
+    professors_info = { professors: ["sesh venugopal", "andrew tjang", "vladimir shtelen"] }
     last_response.body.must_equal professors_info.to_json
   end
 end
