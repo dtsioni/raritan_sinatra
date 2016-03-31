@@ -10,14 +10,11 @@ class Professor < ActiveRecord::Base
 
   #returns json object of average score
   def score
-    puts "!!!!"
     return nil if scores.count == 0
     average = Hash.new(0)
-    puts Score.all.count
     scores.each_with_index do |score, num|
-      puts score.values_string
       METRICS.each do |metric|
-        average[metric] = (average[metric] * num + score.try(metric))/(num + 1)
+        average[metric] = (average[metric] * num + score.try(metric))/(num + 1.0)
       end
     end
     ret = {score: average}

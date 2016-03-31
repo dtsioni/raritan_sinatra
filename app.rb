@@ -72,13 +72,10 @@ post '/:school/:department/:professor' do
 
   if prof.present?
     vote = Score.new(score.merge({professor_id: prof.id, user_id: user_id}))
-    puts "~~~ #{prof.first_name + ' ' + prof.last_name}"
     if vote.save
-      puts "vote success"
       status 200
       return prof.score
     else
-      puts "vote failed...: #{vote.values_string}"
       status 400
       return nil
     end

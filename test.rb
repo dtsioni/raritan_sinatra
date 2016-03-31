@@ -74,12 +74,11 @@ end
 
 describe "Scores" do
   let(:vote){ { score: { fairness: 3, clarity: 5, helpfulness: 3, preparation: 1, homework: 3, participation: 1, interesting: 2, attendance: 2  }, user_id: 1 }.to_json}
-  let(:score_1){ { score: { fairness: 3, clarity: 5, helpfulness: 3, preparation: 1, homework: 3, participation: 1, interesting: 2, attendance: 2 }}.to_json}
+  let(:score_1){ { score: { fairness: 3.0, clarity: 5.0, helpfulness: 3.0, preparation: 1.0, homework: 3.0, participation: 1.0, interesting: 2.0, attendance: 2.0 }}.to_json}
   let(:low_vote){ { score: { fairness: 1,  clarity: 1, helpfulness: 1, preparation: 1, homework: 1, participation: 1, interesting: 1, attendance: 1 }, user_id: 2 }.to_json}
-  let(:average_score){ { score: { fairness: 2, clarity: 3, helpfulness: 2, preparation: 1, homework: 2, participation: 1, interesting: 1.5, attendance: 1.5 }}.to_json}
+  let(:average_score){ { score: { fairness: 2.0, clarity: 3.0, helpfulness: 2.0, preparation: 1.0, homework: 2.0, participation: 1.0, interesting: 1.5, attendance: 1.5 }}.to_json}
 
   before do
-    puts "++ before"
     DatabaseCleaner.clean
   end
 
