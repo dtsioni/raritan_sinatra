@@ -15,6 +15,7 @@ post '/:school/:department/:professor' do
   #grab data from route
   data = JSON.parse(request.body.read)
   score = data["score"]
+  user_id = data["user_id"]
 
   school = School.find_or_create_by(name: params[:school])
   if school.nil?
@@ -30,8 +31,8 @@ post '/:school/:department/:professor' do
   aliases = Alias.where(name: params[:professor])
   aliases.map{ |pseudo| pseudo.professor }
   #filter for professors that are in the right department and school
-  aliases.select{ |prof| prof.department == dept }
-  aliases.select{ |prof| prof.department.school == school }
+  aliases.select{ |pseudo| pseudo.professor.department == dept }
+  aliases.select{ |pseudo| pseudo.professor.department.school == school }
 
   if aliases.count == 1
     #we found the professor
@@ -45,34 +46,39 @@ post '/:school/:department/:professor' do
   if prof.nil?
     name = parse_name(params[:professor])
     professors = match_name(name, dept)
-  end
-  #ambiguity
-  if professors.count > 1
-    status 503
-    return nil
-  end
-  #matched
-  if professors.count == 1
-    prof = professors.first
-    Alias.create(name: params[:name], professor_id: prof.id)
-  end
 
-  if professors.count == 0
-    prof = Professor.new(first_name: name[:first_name], last_name: name[:last_name], department_id: dept.id)
-    if prof.save
-      Alias.create(name: params[:professor], professor_id: prof.id)
-    else
-      status 400
+    #ambiguity
+    if professors.count > 1
+      status 503
       return nil
+    end
+    #matched
+    if professors.count == 1
+      prof = professors.first
+      Alias.create(name: params[:name], professor_id: prof.id)
+    end
+
+    if professors.count == 0
+      prof = Professor.new(first_name: name[:first_name], last_name: name[:last_name], department_id: dept.id)
+      if prof.save
+        Alias.create(name: params[:professor], professor_id: prof.id)
+      else
+        status 400
+        return nil
+      end
     end
   end
 
+
   if prof.present?
-    vote = Score.new(score.merge({professor_id: prof.id}))
+    vote = Score.new(score.merge({professor_id: prof.id, user_id: user_id}))
+    puts "~~~ #{prof.first_name + ' ' + prof.last_name}"
     if vote.save
+      puts "vote success"
       status 200
       return prof.score
     else
+      puts "vote failed...: #{vote.values_string}"
       status 400
       return nil
     end

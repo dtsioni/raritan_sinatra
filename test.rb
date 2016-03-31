@@ -16,8 +16,8 @@ end
 
 DatabaseCleaner.strategy = :truncation
 
+DatabaseCleaner.clean
 before do
-  DatabaseCleaner.clean
   @school_params = { name: "Rutgers University - New Brunswick" }
   @dept_cs_params = { name: "Computer Science" }
   @dept_math_params = { name: "Math" }
@@ -73,58 +73,27 @@ describe "Professors" do
 end
 
 describe "Scores" do
-  let(:vote){ { score: {
-      fairness: 3,
-      clarity: 5,
-      helpfulness: 3,
-      preparation: 1,
-      homework: 3,
-      participation: 1,
-      interesting: 2,
-      attendance: 2
-    }, user_id: 1 }.to_json}
+  let(:vote){ { score: { fairness: 3, clarity: 5, helpfulness: 3, preparation: 1, homework: 3, participation: 1, interesting: 2, attendance: 2  }, user_id: 1 }.to_json}
+  let(:score_1){ { score: { fairness: 3, clarity: 5, helpfulness: 3, preparation: 1, homework: 3, participation: 1, interesting: 2, attendance: 2 }}.to_json}
+  let(:low_vote){ { score: { fairness: 1,  clarity: 1, helpfulness: 1, preparation: 1, homework: 1, participation: 1, interesting: 1, attendance: 1 }, user_id: 2 }.to_json}
+  let(:average_score){ { score: { fairness: 2, clarity: 3, helpfulness: 2, preparation: 1, homework: 2, participation: 1, interesting: 1.5, attendance: 1.5 }}.to_json}
 
-  let(:score_1){{ score: {
-      fairness: 3,
-      clarity: 5,
-      helpfulness: 3,
-      preparation: 1,
-      homework: 3,
-      participation: 1,
-      interesting: 2,
-      attendance: 2 }}.to_json}
-
-  let(:low_vote){ { score: {
-      fairness: 1,
-      clarity: 1,
-      helpfulness: 1,
-      preparation: 1,
-      homework: 1,
-      participation: 1,
-      interesting: 1,
-      attendance: 1
-    }, user_id: 2 }.to_json}
-
-  let(:average_score){ { score: {
-      fairness: 2,
-      clarity: 3,
-      helpfulness: 2,
-      preparation: 1,
-      homework: 2,
-      participation: 1,
-      interesting: 1.5,
-      attendance: 1.5 }}.to_json}
+  before do
+    puts "++ before"
+    DatabaseCleaner.clean
+  end
 
   it "should return status OK and their current score" do
     post("/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Sesh%20Venugopal", vote, { "CONTENT_TYPE" => "application/json" })
     last_response.status.must_equal 200
-    last_response.body.must_equal score_1.to_json
+    last_response.body.must_equal score_1
   end
 
   it "should return their average score" do
+    post("/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Sesh%20Venugopal", vote, { "CONTENT_TYPE" => "application/json" })
     post("/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Sesh%20Venugopal", low_vote, { "CONTENT_TYPE" => "application/json" })
     last_response.status.must_equal 200
-    last_response.body.must_equal average_score.to_json
+    last_response.body.must_equal average_score
   end
 
   it "should create a new professor and return their score" do
@@ -132,7 +101,7 @@ describe "Scores" do
     post("/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Brian%20Russell", vote, { "CONTENT_TYPE" => "application/json" })
     Professor.count.must_equal baz + 1
     last_response.status.must_equal 200
-    last_response.body.must_equal score_1.to_json
+    last_response.body.must_equal score_1
   end
 
   it "should create aliases for an existing professor, without making new professors" do
@@ -153,7 +122,8 @@ describe "Scores" do
     Professor.count.must_equal baz
     Alias.count.must_equal qux + 6
     last_response.status.must_equal 200
-    last_response.body.must_equal vote.to_json
+    last_response.body.must_equal vote
   end
 end
+
 
