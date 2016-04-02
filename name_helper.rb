@@ -38,19 +38,42 @@ end
 #takes hash of name
 #returns an array of all professors that might approximately be this name
 def match_name(name, dept)
+  full_name = name[:first_name] + " " + name[:last_name]
   #is it a perfect match?
   prof = dept.professors.where(name)
-  return prof if prof
+  return prof unless prof.empty?
   #if we have a first name with a middle initial, try without the middle initial
-  if name.match(/^[a-z]+\s[a-z]$/)
+  if full_name.match(/^[a-z]+\s[a-z]$/)
     prof = dept.professors.where(first_name: name.chop.chop, last_name: name[:last_name])
   end
-  return prof if prof
+  return prof unless prof.empty?
+  #reciprocal
+  if name[:first_name].match(/^[a-z]+$/)
+    prof = dept.professors.select{ |baz|
+      if baz.first_name.match(/^[a-z]+\s[a-z]$/)
+        baz.first_name.chop.chop == name[:first_name]
+      end
+    }
+  end
+  return prof unless prof.empty?
+
   #try just the first initial
-  prof = dept.professors.where(first_name: name[:first_name][0].chr.to_s, last_name: name[:last_name])
-  return prof if prof
+  if name[:first_name].length > 0
+    prof = dept.professors.where(first_name: name[:first_name][0].chr.to_s, last_name: name[:last_name])
+  end
+  return prof unless prof.empty?
+  #reciprocal
+  if name[:first_name.match(/^[a-z]\s*$/)]
+    prof = dept.professors.select{ |baz|
+      puts "FI: #{baz.first_name}:#{name[:first_name]}"
+      if baz.first_name.length > 0
+        baz.first_name[0].chr.to_s == name[:first_name][0].chr.to_s
+      end
+    }
+  end
+  return prof unless prof.empty?
   #try just the last name
   prof = dept.professors.where(last_name: name[:last_name])
-  return prof if prof
-  return nil
+  return prof unless prof.empty?
+  return []
 end

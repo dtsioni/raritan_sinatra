@@ -17,58 +17,20 @@ end
 DatabaseCleaner.strategy = :truncation
 
 DatabaseCleaner.clean
-before do
-  @school_params = { name: "Rutgers University - New Brunswick" }
-  @dept_cs_params = { name: "Computer Science" }
-  @dept_math_params = { name: "Math" }
-  @cs_prof1_params = { first_name: "sesh", last_name: "venugopal" }
-  @cs_prof2_params = { first_name: "andrew", last_name: "tjang" }
-  @math_prof1_params = { first_name: "vladimir", last_name: "shtelen" }
 
-  school = School.create(@school_params)
-  dept_cs = Department.create(@dept_cs_params)
-  dept_math = Department.create(@dept_math_params)
-  cs_prof1 = Professor.create(@cs_prof1_params)
-  cs_prof2 = Professor.create(@cs_prof2_params)
-  math_prof1 = Professor.create(@math_prof1_params)
+describe "Creating initial data" do
 
-  school.departments << dept_cs
-  school.departments << dept_math
-  dept_cs.professors << cs_prof1
-  dept_cs.professors << cs_prof2
-  dept_math.professors << math_prof1
+  let(:vote){ { score: { fairness: 3, clarity: 5, helpfulness: 3, preparation: 1, homework: 3, participation: 1, interesting: 2, attendance: 2  }, user_id: 1 }.to_json}
 
-  school.save
-end
-
-describe "Department" do
-  before { get '/Rutgers%20University%20-%20New%20Brunswick/departments' }
-  it "should return json" do
-    last_response.headers['Content-Type'].must_equal 'application/json'
-  end
-
-  it "should return a list of departments" do
-    departments_info = { departments: ["Computer Science", "Math"] }
-    last_response.body.must_equal departments_info.to_json
-  end
-end
-
-describe "Professors" do
-  it "should return json" do
-    get '/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/professors'
-    last_response.headers['Content-Type'].must_equal 'application/json'
-  end
-
-  it "should return a list of professors from Computer Science" do
-    get '/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/professors'
-    professors_info = { professors: ["sesh venugopal", "andrew tjang"] }
-    last_response.body.must_equal professors_info.to_json
-  end
-
-  it "should return a list of all professors" do
-    get '/Rutgers%20University%20-%20New%20Brunswick/professors'
-    professors_info = { professors: ["sesh venugopal", "andrew tjang", "vladimir shtelen"] }
-    last_response.body.must_equal professors_info.to_json
+  it "initial data should create a new professor, department, and school" do
+    DatabaseCleaner.clean
+    foo = Professor.count
+    baz = Department.count
+    qux = School.count
+    post("/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Sesh%20Venugopal", vote, { "CONTENT_TYPE" => "application/json" })
+    School.count.must_equal foo + 1
+    Department.count.must_equal baz + 1
+    Professor.count.must_equal qux + 1
   end
 end
 
@@ -78,17 +40,15 @@ describe "Scores" do
   let(:low_vote){ { score: { fairness: 1,  clarity: 1, helpfulness: 1, preparation: 1, homework: 1, participation: 1, interesting: 1, attendance: 1 }, user_id: 2 }.to_json}
   let(:average_score){ { score: { fairness: 2.0, clarity: 3.0, helpfulness: 2.0, preparation: 1.0, homework: 2.0, participation: 1.0, interesting: 1.5, attendance: 1.5 }}.to_json}
 
-  before do
-    DatabaseCleaner.clean
-  end
-
   it "should return status OK and their current score" do
+    DatabaseCleaner.clean
     post("/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Sesh%20Venugopal", vote, { "CONTENT_TYPE" => "application/json" })
     last_response.status.must_equal 200
     last_response.body.must_equal score_1
   end
 
   it "should return their average score" do
+    DatabaseCleaner.clean
     post("/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Sesh%20Venugopal", vote, { "CONTENT_TYPE" => "application/json" })
     post("/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Sesh%20Venugopal", low_vote, { "CONTENT_TYPE" => "application/json" })
     last_response.status.must_equal 200
@@ -96,6 +56,7 @@ describe "Scores" do
   end
 
   it "should create a new professor and return their score" do
+    DatabaseCleaner.clean
     baz = Professor.count
     post("/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Brian%20Russell", vote, { "CONTENT_TYPE" => "application/json" })
     Professor.count.must_equal baz + 1
@@ -104,7 +65,13 @@ describe "Scores" do
   end
 
   it "should create aliases for an existing professor, without making new professors" do
-    baz = Professor.count
+    vote_2 = { score: { fairness: 3, clarity: 5, helpfulness: 3, preparation: 1, homework: 3, participation: 1, interesting: 2, attendance: 2  }, user_id: 2 }.to_json
+    vote_3 = { score: { fairness: 3, clarity: 5, helpfulness: 3, preparation: 1, homework: 3, participation: 1, interesting: 2, attendance: 2  }, user_id: 3 }.to_json
+    vote_4 = { score: { fairness: 3, clarity: 5, helpfulness: 3, preparation: 1, homework: 3, participation: 1, interesting: 2, attendance: 2  }, user_id: 4 }.to_json
+    vote_5 = { score: { fairness: 3, clarity: 5, helpfulness: 3, preparation: 1, homework: 3, participation: 1, interesting: 2, attendance: 2  }, user_id: 5 }.to_json
+    vote_6 = { score: { fairness: 3, clarity: 5, helpfulness: 3, preparation: 1, homework: 3, participation: 1, interesting: 2, attendance: 2  }, user_id: 6 }.to_json
+    vote_7 = { score: { fairness: 3, clarity: 5, helpfulness: 3, preparation: 1, homework: 3, participation: 1, interesting: 2, attendance: 2  }, user_id: 7 }.to_json
+    DatabaseCleaner.clean
     qux = Alias.count
     #Brian K Russell
     #Brian K. Russell
@@ -112,16 +79,44 @@ describe "Scores" do
     #Russell, B
     #Russell, B.
     #Russell
-    post("/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Brian%20K%20Russell", vote, { "CONTENT_TYPE" => "application/json" })
-    post("/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Brian%20K.%20Russell", vote, { "CONTENT_TYPE" => "application/json" })
-    post("/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Russell%2C%20Brian", vote, { "CONTENT_TYPE" => "application/json" })
-    post("/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Russell%2C%20B", vote, { "CONTENT_TYPE" => "application/json" })
-    post("/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Russell%2C%20B.", vote, { "CONTENT_TYPE" => "application/json" })
-    post("/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Russell", vote, { "CONTENT_TYPE" => "application/json" })
-    Professor.count.must_equal baz
+    post("/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Russell", vote_7, { "CONTENT_TYPE" => "application/json" })
+    post("/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Brian%20K%20Russell", vote_2, { "CONTENT_TYPE" => "application/json" })
+    post("/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Brian%20K.%20Russell", vote_3, { "CONTENT_TYPE" => "application/json" })
+    post("/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Russell%2C%20Brian", vote_4, { "CONTENT_TYPE" => "application/json" })
+    post("/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Russell%2C%20B", vote_5, { "CONTENT_TYPE" => "application/json" })
+    post("/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Russell%2C%20B.", vote_6, { "CONTENT_TYPE" => "application/json" })
+    Professor.count.must_equal 1
     Alias.count.must_equal qux + 6
     last_response.status.must_equal 200
-    last_response.body.must_equal vote
+    last_response.body.must_equal score_1
+  end
+end
+
+describe "Department" do
+  let(:departments){ { departments: ["Computer Science", "Math"]}.to_json}
+
+  it "should return a list of departments" do
+    DatabaseCleaner.clean
+    vote = { score: { fairness: 3, clarity: 5, helpfulness: 3, preparation: 1, homework: 3, participation: 1, interesting: 2, attendance: 2  }, user_id: 1 }.to_json
+    post("/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Brian%20Russell", vote, { "CONTENT_TYPE" => "application/json" })
+    post("/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Sesh%20Venugopal", vote, { "CONTENT_TYPE" => "application/json" })
+    post("/Rutgers%20University%20-%20New%20Brunswick/Math/Vladimir%20Shtelen", vote, { "CONTENT_TYPE" => "application/json" })
+    get "/Rutgers%20University%20-%20New%20Brunswick/departments"
+    last_response.body.must_equal departments
+  end
+end
+
+describe "Professors" do
+  let(:professors){ { professors: ["brian russell", "sesh venugopal"]}.to_json}
+
+  it "should return a list of CS professors" do
+    DatabaseCleaner.clean
+    vote = { score: { fairness: 3, clarity: 5, helpfulness: 3, preparation: 1, homework: 3, participation: 1, interesting: 2, attendance: 2  }, user_id: 1 }.to_json
+    post("/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Brian%20Russell", vote, { "CONTENT_TYPE" => "application/json" })
+    post("/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Sesh%20Venugopal", vote, { "CONTENT_TYPE" => "application/json" })
+    post("/Rutgers%20University%20-%20New%20Brunswick/Math/Vladimir%20Shtelen", vote, { "CONTENT_TYPE" => "application/json" })
+    get "/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/professors"
+    last_response.body.must_equal professors
   end
 end
 

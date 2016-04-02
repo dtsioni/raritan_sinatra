@@ -29,18 +29,14 @@ post '/:school/:department/:professor' do
   end
   #check the alias table
   aliases = Alias.where(name: params[:professor])
-  aliases.map{ |pseudo| pseudo.professor }
   #filter for professors that are in the right department and school
   aliases.select{ |pseudo| pseudo.professor.department == dept }
   aliases.select{ |pseudo| pseudo.professor.department.school == school }
 
+  prof = nil
   if aliases.count == 1
     #we found the professor
     prof = aliases.first.professor
-  else
-    #either ambigious or not found
-    #hopefully we'll have better luck later
-    prof = nil
   end
 
   if prof.nil?
@@ -59,7 +55,7 @@ post '/:school/:department/:professor' do
         prof.first_name = name[:first_name]
         prof.save
       end
-      Alias.create(name: params[:name], professor_id: prof.id)
+      Alias.create(name: params[:professor], professor_id: prof.id)
     end
 
     if professors.count == 0
@@ -83,6 +79,9 @@ post '/:school/:department/:professor' do
       status 400
       return nil
     end
+  else
+    status 400
+    return nil
   end
 end
 # return all professors from a department
@@ -106,18 +105,6 @@ get '/:school/departments' do
   end
   ret = Hash.new
   ret[:departments] = departments
-  return JSON.generate ret
-end
-# return all professors from a school
-get '/:school/professors' do
-  content_type :json
-  professors = Array.new
-  profs_rows = School.find_by(name: params[:school]).professors
-  profs_rows.each do |prof|
-    professors.push "#{prof.first_name} #{prof.last_name}"
-  end
-  ret = Hash.new
-  ret[:professors] = professors
   return JSON.generate ret
 end
 
