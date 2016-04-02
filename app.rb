@@ -10,6 +10,31 @@ require './models/alias'
 require './config/environments'
 require './name_helper'
 require './alias_helper'
+# explicit routes should be higher
+# return all professors from a department
+get '/fpo/1/:school/:department/professors' do
+  content_type :json
+  professors = Array.new
+  profs_rows = School.find_by(name: params[:school]).departments.find_by(name: params[:department]).professors
+  profs_rows.each do |prof|
+    professors.push "#{prof.first_name} #{prof.last_name}"
+  end
+  ret = Hash.new
+  ret[:professors] = professors
+  return JSON.generate ret
+end
+# return all departments from a school
+get '/fpo/1/:school/departments' do
+  content_type :json
+  departments = Array.new()
+  School.find_by(name: params[:school]).departments.each do |dept|
+    departments.push(dept.name)
+  end
+  ret = Hash.new
+  ret[:departments] = departments
+  return JSON.generate ret
+end
+
 # create a professor
 post '/fpo/1/:school/:department/:professor' do
   school = School.find_or_create_by(name: params[:school])
@@ -130,29 +155,6 @@ post '/fpo/1/:school/:department/:professor/scores' do
     status 400
     return nil
   end
-end
-# return all professors from a department
-get '/fpo/1/:school/:department/professors' do
-  content_type :json
-  professors = Array.new
-  profs_rows = School.find_by(name: params[:school]).departments.find_by(name: params[:department]).professors
-  profs_rows.each do |prof|
-    professors.push "#{prof.first_name} #{prof.last_name}"
-  end
-  ret = Hash.new
-  ret[:professors] = professors
-  return JSON.generate ret
-end
-# return all departments from a school
-get '/fpo/1/:school/departments' do
-  content_type :json
-  departments = Array.new()
-  School.find_by(name: params[:school]).departments.each do |dept|
-    departments.push(dept.name)
-  end
-  ret = Hash.new
-  ret[:departments] = departments
-  return JSON.generate ret
 end
 
 
