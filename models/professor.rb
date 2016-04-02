@@ -23,6 +23,7 @@ class Professor < ActiveRecord::Base
   end
 
   def full_name
+    return last_name if first_name.empty?
     first_name + " " + last_name
   end
 end

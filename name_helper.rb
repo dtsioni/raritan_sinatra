@@ -77,3 +77,10 @@ def match_name(name, dept)
   return prof unless prof.empty?
   return []
 end
+#gives prof the longer name, between it's own and name
+def longer_name(prof, name)
+  if prof.first_name.length < name.length
+    prof.first_name = name
+    prof.save
+  end
+end
