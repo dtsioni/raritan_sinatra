@@ -7,7 +7,7 @@ configure :development do
 end
 
 configure :production do
-  db = ENV["DATABASE_URL"] || URI.parse('postgres:///raritan_prod')
+  db = URI.parse(ENV["DATABASE_URL"]) || URI.parse('postgres:///raritan_prod')
   ActiveRecord::Base.establish_connection(
     :adapter  => db.scheme == 'postgres' ? 'postgresql' : db.scheme,
     :host     => db.host,
