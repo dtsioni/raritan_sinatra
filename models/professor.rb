@@ -7,14 +7,13 @@ class Professor < ActiveRecord::Base
   validates_presence_of :last_name, :department
   validates_uniqueness_of :first_name, :scope => :last_name
 
-  METRICS = [:fairness, :clarity, :helpfulness, :preparation, :homework, :participation, :interesting, :attendance]
 
   #returns json object of average score
   def score
     return nil if scores.count == 0
     average = Hash.new(0)
     scores.each_with_index do |score, num|
-      METRICS.each do |metric|
+      Score::METRICS.each do |metric|
         average[metric] = (average[metric] * num + score.try(metric))/(num + 1.0)
       end
     end
