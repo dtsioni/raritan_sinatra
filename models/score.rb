@@ -3,11 +3,11 @@ class Score < ActiveRecord::Base
 
   validates_uniqueness_of :professor_id, :scope => :user_id
 
-  validates_presence_of :fairness, :helpfulness, :clarity, :user_id
-  validates_inclusion_of :fairness, :helpfulness, :clarity, :in => 1..5
-  validates_inclusion_of :preparation, :homework, :participation, :interesting, :attendance, :in => 1..3
+  validates_presence_of :easiness, :helpfulness, :clarity, :user_id
+  validates_inclusion_of :easiness, :helpfulness, :clarity, :in => 1..5
+  validates_inclusion_of :interesting, :work, :organization, :pacing :in => 1..3
 
-  METRICS = [:fairness, :clarity, :helpfulness, :preparation, :homework, :participation, :interesting, :attendance]
+  METRICS = [:easiness, :clarity, :helpfulness, :interesting, :work, :organization, :pacing]
 
   def values_string
     ret = ""
