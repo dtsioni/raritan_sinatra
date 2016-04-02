@@ -15,7 +15,7 @@
 
 ### POST /:school/:department/:professor/scores
 * Takes a JSON object from the params of the format:
-    { score: {...}, user_id: X}
+    { score: {easiness: 1, helpfulness: 1, clarity: 1, interesting: 1, work: 1, organization: 1, pacing: 1}, user_id: X}
     * user_id is chrome user id
 * Attempts to match professor name with preexisting professors
 * Will create a new professor if that professor isn't found
@@ -24,7 +24,7 @@
 * Status 201 if a new score is created
 * Status 200 if the user already voted for this professor, and their old score is updated
 * Returns the professors (updated) average score, in the format:
- { score: {...} }
+ { score: {easiness: 1, helpfulness: 1, clarity: 1, interesting: 1, work: 1, organization: 1, pacing: 1} }
 
 ### GET /:school/:department/professors
 * Returns a list of all professors in the given department, in the format:
