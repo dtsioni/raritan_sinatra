@@ -5,8 +5,6 @@ class ChangeScoresToDecimal < ActiveRecord::Migration
     change_column :scores, :helpfulness, :decimal
     change_column :scores, :preparation, :decimal
     change_column :scores, :homework, :decimal
-    change_column :scores, :participation, :decimal
     change_column :scores, :interesting, :decimal
-    change_column :scores, :attendance, :decimal
   end
 end

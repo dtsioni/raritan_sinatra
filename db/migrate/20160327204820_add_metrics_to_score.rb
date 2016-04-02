@@ -6,8 +6,6 @@ class AddMetricsToScore < ActiveRecord::Migration
 
     add_column :scores, :preparation, :integer
     add_column :scores, :homework, :integer
-    add_column :scores, :participation, :integer
     add_column :scores, :interesting, :integer
-    add_column :scores, :attendance, :integer
   end
 end
