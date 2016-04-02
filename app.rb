@@ -46,13 +46,15 @@ post '/fpo/1/:school/:department/:professor' do
       prof = Professor.new(first_name: name[:first_name], last_name: name[:last_name], department_id: dept.id)
       if prof.save
         Alias.create(name: params[:professor], professor_id: prof.id)
+        status 201
+        return nil
       else
         status 400
         return nil
       end
     end
   end
-  status 201
+  status 200
   return nil
 end
 # post a new score for a professor
