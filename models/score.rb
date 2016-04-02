@@ -5,7 +5,7 @@ class Score < ActiveRecord::Base
 
   validates_presence_of :easiness, :helpfulness, :clarity, :user_id
   validates_inclusion_of :easiness, :helpfulness, :clarity, :in => 1..5
-  validates_inclusion_of :interesting, :work, :organization, :pacing :in => 1..3
+  validates_inclusion_of :interesting, :work, :organization, :pacing, :in => 1..3
 
   METRICS = [:easiness, :clarity, :helpfulness, :interesting, :work, :organization, :pacing]
 
