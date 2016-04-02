@@ -45,7 +45,7 @@ post '/:school/:department/:professor' do
 
     #ambiguity
     if professors.count > 1
-      status 503
+      status 501
       return nil
     end
     #matched
@@ -71,9 +71,21 @@ post '/:school/:department/:professor' do
 
 
   if prof.present?
+    previous_vote = Score.find_by(professor_id: prof.id, user_id: user_id)
+    #has this user voted on this professor before?
+    if previous_vote
+      if previous_vote.update(score)
+        status 200
+        return prof.score
+      else
+        status 400
+        return nil
+      end
+    end
+
     vote = Score.new(score.merge({professor_id: prof.id, user_id: user_id}))
     if vote.save
-      status 200
+      status 201
       return prof.score
     else
       status 400

@@ -43,7 +43,7 @@ describe "Scores" do
   it "should return status OK and their current score" do
     DatabaseCleaner.clean
     post("/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Sesh%20Venugopal", vote, { "CONTENT_TYPE" => "application/json" })
-    last_response.status.must_equal 200
+    last_response.status.must_equal 201
     last_response.body.must_equal score_1
   end
 
@@ -51,7 +51,7 @@ describe "Scores" do
     DatabaseCleaner.clean
     post("/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Sesh%20Venugopal", vote, { "CONTENT_TYPE" => "application/json" })
     post("/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Sesh%20Venugopal", low_vote, { "CONTENT_TYPE" => "application/json" })
-    last_response.status.must_equal 200
+    last_response.status.must_equal 201
     last_response.body.must_equal average_score
   end
 
@@ -60,7 +60,7 @@ describe "Scores" do
     baz = Professor.count
     post("/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Brian%20Russell", vote, { "CONTENT_TYPE" => "application/json" })
     Professor.count.must_equal baz + 1
-    last_response.status.must_equal 200
+    last_response.status.must_equal 201
     last_response.body.must_equal score_1
   end
 
@@ -87,8 +87,15 @@ describe "Scores" do
     post("/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Russell%2C%20B.", vote_6, { "CONTENT_TYPE" => "application/json" })
     Professor.count.must_equal 1
     Alias.count.must_equal qux + 6
-    last_response.status.must_equal 200
+    last_response.status.must_equal 201
     last_response.body.must_equal score_1
+  end
+
+  it "should update your vote" do
+    post("/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Russell", vote, { "CONTENT_TYPE" => "application/json" })
+    post("/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Russell", low_vote, { "CONTENT_TYPE" => "application/json" })
+
+    last_response.status.must_equal 200
   end
 end
 
