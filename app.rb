@@ -10,7 +10,52 @@ require './models/alias'
 require './config/environments'
 require './name_helper'
 require './alias_helper'
-# post a new score for this professor
+# create a professor
+post '/fpo/1/:school/:department/:professor' do
+  school = School.find_or_create_by(name: params[:school])
+  if school.nil?
+    status 400
+    return nil
+  end
+  dept = school.departments.find_or_create_by(name: params[:department])
+  if dept.nil?
+    status 400
+    return nil
+  end
+  aliases = find_aliases(params[:professor], dept, school)
+  prof = nil
+  # set professor if we found an alias
+  prof = aliases.first.professor if aliases.count == 1
+  #find or create our new professor (including approximate names)
+  if prof.nil?
+    name = parse_name(params[:professor])
+    professors = match_name(name, dept)
+    #ambiguity
+    if professors.count > 1
+      status 501
+      return nil
+    end
+    #matched
+    if professors.count == 1
+      prof = professors.first
+      longer_name(prof, name[:first_name])
+      Alias.create(name: params[:professor], professor_id: prof.id)
+    end
+
+    if professors.count == 0
+      prof = Professor.new(first_name: name[:first_name], last_name: name[:last_name], department_id: dept.id)
+      if prof.save
+        Alias.create(name: params[:professor], professor_id: prof.id)
+      else
+        status 400
+        return nil
+      end
+    end
+  end
+  status 201
+  return nil
+end
+# post a new score for a professor
 post '/fpo/1/:school/:department/:professor/scores' do
   #grab data from route
   data = JSON.parse(request.body.read)

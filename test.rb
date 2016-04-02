@@ -127,6 +127,15 @@ describe "Professors" do
     get "/fpo/1/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/professors"
     last_response.body.must_equal professors
   end
+
+  it "should create a new professor, department, and school" do
+    DatabaseCleaner.clean
+    post "/fpo/1/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Brian%20Russell"
+    Professor.count.must_equal 1
+    Department.count.must_equal 1
+    School.count.must_equal 1
+    last_response.status.must_equal 201
+  end
 end
 
 
