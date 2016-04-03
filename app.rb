@@ -38,15 +38,9 @@ end
 # create a professor
 post '/fpo/1/:school/:department/:professor' do
   school = School.find_or_create_by(name: params[:school])
-  if school.nil?
-    status 400
-    return nil
-  end
+  halt 400, "School invalid" if school.nil?
   dept = school.departments.find_or_create_by(name: params[:department])
-  if dept.nil?
-    status 400
-    return nil
-  end
+  halt 400, "Department invalid" if dept.nil?
   aliases = find_aliases(params[:professor], dept, school)
   prof = nil
   # set professor if we found an alias
@@ -56,10 +50,7 @@ post '/fpo/1/:school/:department/:professor' do
     name = parse_name(params[:professor])
     professors = match_name(name, dept)
     #ambiguity
-    if professors.count > 1
-      status 501
-      return nil
-    end
+    halt 501, "Professor ambiguity" if professors.count > 1
     #matched
     if professors.count == 1
       prof = professors.first
@@ -71,11 +62,9 @@ post '/fpo/1/:school/:department/:professor' do
       prof = Professor.new(first_name: name[:first_name], last_name: name[:last_name], department_id: dept.id)
       if prof.save
         Alias.create(name: params[:professor], professor_id: prof.id)
-        status 201
-        return nil
+        halt 201, "New professor created"
       else
-        status 400
-        return nil
+        halt 400, "Professor invalid"
       end
     end
   end
@@ -90,15 +79,9 @@ post '/fpo/1/:school/:department/:professor/scores' do
   user_id = data["user_id"]
 
   school = School.find_or_create_by(name: params[:school])
-  if school.nil?
-    status 400
-    return nil
-  end
+  halt 400, "School invalid" if school.nil?
   dept = school.departments.find_or_create_by(name: params[:department])
-  if dept.nil?
-    status 400
-    return nil
-  end
+  halt 400, "Department invalid" if dept.nil?
   aliases = find_aliases(params[:professor], dept, school)
   prof = nil
   # set professor if we found an alias
@@ -108,10 +91,7 @@ post '/fpo/1/:school/:department/:professor/scores' do
     name = parse_name(params[:professor])
     professors = match_name(name, dept)
     #ambiguity
-    if professors.count > 1
-      status 501
-      return nil
-    end
+    halt 501, "Professor ambiguity" if professors.count > 1
     #matched
     if professors.count == 1
       prof = professors.first
@@ -124,8 +104,7 @@ post '/fpo/1/:school/:department/:professor/scores' do
       if prof.save
         Alias.create(name: params[:professor], professor_id: prof.id)
       else
-        status 400
-        return nil
+        halt 400, "Professor invalid"
       end
     end
   end
@@ -138,8 +117,7 @@ post '/fpo/1/:school/:department/:professor/scores' do
         status 200
         return prof.score
       else
-        status 400
-        return nil
+        halt 400, "Score invalid"
       end
     end
 
@@ -148,12 +126,11 @@ post '/fpo/1/:school/:department/:professor/scores' do
       status 201
       return prof.score
     else
-      status 400
+      halt 400, "Score invalid"
       return nil
     end
   else
-    status 400
-    return nil
+    halt 400
   end
 end
 
