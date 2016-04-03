@@ -24,13 +24,10 @@ describe "Creating initial data" do
 
   it "initial data should create a new professor, department, and school" do
     DatabaseCleaner.clean
-    foo = Professor.count
-    baz = Department.count
-    qux = School.count
     post("/fpo/1/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Sesh%20Venugopal/scores", vote, { "CONTENT_TYPE" => "application/json" })
-    School.count.must_equal foo + 1
-    Department.count.must_equal baz + 1
-    Professor.count.must_equal qux + 1
+    School.count.must_equal 1
+    Department.count.must_equal 1
+    Professor.count.must_equal 1
   end
 end
 
@@ -58,9 +55,8 @@ describe "Scores" do
 
   it "should create a new professor and return their score" do
     DatabaseCleaner.clean
-    baz = Professor.count
     post("/fpo/1/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Brian%20Russell/scores", vote, { "CONTENT_TYPE" => "application/json" })
-    Professor.count.must_equal baz + 1
+    Professor.count.must_equal 1
     last_response.status.must_equal 201
     last_response.body.must_equal score_1
   end
@@ -73,13 +69,12 @@ describe "Scores" do
     vote_6 = { score: { easiness: 3, clarity: 5, helpfulness: 3, interesting: 2, work: 1, organization: 3, pacing: 2  }, user_id: 6 }.to_json
     vote_7 = { score: { easiness: 3, clarity: 5, helpfulness: 3, interesting: 2, work: 1, organization: 3, pacing: 2  }, user_id: 7 }.to_json
     DatabaseCleaner.clean
-    qux = Alias.count
+    #Russell
     #Brian K Russell
     #Brian K. Russell
     #Russell, Brian
     #Russell, B
     #Russell, B.
-    #Russell
     post("/fpo/1/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Russell/scores", vote_7, { "CONTENT_TYPE" => "application/json" })
     post("/fpo/1/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Brian%20K%20Russell/scores", vote_2, { "CONTENT_TYPE" => "application/json" })
     post("/fpo/1/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Brian%20K.%20Russell/scores", vote_3, { "CONTENT_TYPE" => "application/json" })
@@ -87,7 +82,7 @@ describe "Scores" do
     post("/fpo/1/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Russell%2C%20B/scores", vote_5, { "CONTENT_TYPE" => "application/json" })
     post("/fpo/1/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Russell%2C%20B./scores", vote_6, { "CONTENT_TYPE" => "application/json" })
     Professor.count.must_equal 1
-    Alias.count.must_equal qux + 6
+    Alias.count.must_equal 6
     last_response.status.must_equal 201
     last_response.body.must_equal score_1
   end
@@ -117,6 +112,7 @@ end
 
 describe "Professors" do
   let(:professors){ { professors: ["brian russell", "sesh venugopal"]}.to_json}
+  let(:prof_br){{professors:["brian k russell"]}.to_json}
 
   it "should return a list of CS professors" do
     DatabaseCleaner.clean
@@ -135,6 +131,15 @@ describe "Professors" do
     Department.count.must_equal 1
     School.count.must_equal 1
     last_response.status.must_equal 201
+  end
+
+  it "should pick the longer name" do
+    DatabaseCleaner.clean
+    post "/fpo/1/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Russell"
+    post "/fpo/1/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Brian%20Russell"
+    post "/fpo/1/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Brian%20K%20Russell"
+    get "/fpo/1/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/professors"
+    last_response.body.must_equal prof_br
   end
 end
 
