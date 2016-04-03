@@ -14,34 +14,25 @@ require './helpers/alias_helper'
 # return all professors from a department
 get '/fpo/1/:school/:department/professors' do
   content_type :json
-  professors = Array.new
 
   school = School.find_by(name: params[:school])
   halt 400, "School invalid" if school.nil?
   dept = school.departments.find_by(name: params[:department])
   halt 400, "Department invalid" if dept.nil?
-  profs = dept.professors
 
-  profs.each do |prof|
-    professors.push "#{prof.full_name}"
-  end
   ret = Hash.new
-  ret[:professors] = professors
+  ret[:professors] = dept.professors.map{ |baz| baz.full_name }
   return JSON.generate ret
 end
 # return all departments from a school
 get '/fpo/1/:school/departments' do
   content_type :json
-  departments = Array.new
 
   school = School.find_by(name: params[:school])
   halt 400, "School invalid" if school.nil?
 
-  school.departments.each do |dept|
-    departments.push(dept.name)
-  end
   ret = Hash.new
-  ret[:departments] = departments
+  ret[:departments] = school.departments.map{ |baz| baz.name }
   return JSON.generate ret
 end
 
