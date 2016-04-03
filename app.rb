@@ -35,7 +35,6 @@ get '/fpo/1/:school/departments' do
   ret[:departments] = school.departments.map{ |baz| baz.name }
   return JSON.generate ret
 end
-
 # create a professor or alias
 post '/fpo/1/:school/:department/:professor' do
   school = School.find_or_create_by(name: params[:school])
@@ -69,6 +68,7 @@ end
 post '/fpo/1/:school/:department/:professor/scores' do
   #grab data from route
   data = JSON.parse(request.body.read)
+  halt 400, "Score invalid" if data.nil?
   score = data["score"]
   user_id = data["user_id"]
 
@@ -76,15 +76,16 @@ post '/fpo/1/:school/:department/:professor/scores' do
   halt 400, "School invalid" if school.nil?
   dept = school.departments.find_or_create_by(name: params[:department])
   halt 400, "Department invalid" if dept.nil?
+
   aliases = find_aliases(params[:professor], dept, school)
   prof = nil
-  # set professor if we found an alias
+
   prof = aliases.first.professor if aliases.count == 1
   #find or create our new professor (including approximate names)
   if prof.nil?
     name = parse_name(params[:professor])
     professors = match_name(name, dept)
-    #ambiguity
+
     halt 501, "Professor ambiguity" if professors.count > 1
     #matched
     if professors.count == 1
@@ -114,7 +115,6 @@ post '/fpo/1/:school/:department/:professor/scores' do
         halt 400, "Score invalid"
       end
     end
-
     vote = Score.new(score.merge({professor_id: prof.id, user_id: user_id}))
     if vote.save
       status 201
