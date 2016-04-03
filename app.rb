@@ -8,8 +8,8 @@ require './models/score'
 require './models/alias'
 # database config
 require './config/environments'
-require './name_helper'
-require './alias_helper'
+require './helpers/name_helper'
+require './helpers/alias_helper'
 # explicit routes should be higher
 # return all professors from a department
 get '/fpo/1/:school/:department/professors' do
