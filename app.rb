@@ -36,41 +36,34 @@ get '/fpo/1/:school/departments' do
   return JSON.generate ret
 end
 
-# create a professor
+# create a professor or alias
 post '/fpo/1/:school/:department/:professor' do
   school = School.find_or_create_by(name: params[:school])
   halt 400, "School invalid" if school.nil?
   dept = school.departments.find_or_create_by(name: params[:department])
   halt 400, "Department invalid" if dept.nil?
-  aliases = find_aliases(params[:professor], dept, school)
-  prof = nil
-  # set professor if we found an alias
-  prof = aliases.first.professor if aliases.count == 1
+  #if this is already an alias, we know the professor exists
+  halt 200, "Professor exists" if find_aliases(params[:professor], dept, school).count == 1
   #find or create our new professor (including approximate names)
-  if prof.nil?
-    name = parse_name(params[:professor])
-    professors = match_name(name, dept)
-    #ambiguity
-    halt 501, "Professor ambiguity" if professors.count > 1
-    #matched
-    if professors.count == 1
-      prof = professors.first
-      longer_name(prof, name[:first_name])
-      Alias.create(name: params[:professor], professor_id: prof.id)
-    end
+  name = parse_name(params[:professor])
+  professors = match_name(name, dept)
 
-    if professors.count == 0
-      prof = Professor.new(first_name: name[:first_name], last_name: name[:last_name], department_id: dept.id)
-      if prof.save
-        Alias.create(name: params[:professor], professor_id: prof.id)
-        halt 201, "New professor created"
-      else
-        halt 400, "Professor invalid"
-      end
-    end
+  halt 501, "Professor ambiguity" if professors.count > 1
+
+  if professors.count == 1
+    prof = professors.first
+    pick_longer_name(prof, name[:first_name])
+    Alias.create(name: params[:professor], professor_id: prof.id)
+    halt 200, "Professor exists, alias created"
   end
-  status 200
-  return nil
+  #if professors.count = 0
+  prof = Professor.new(first_name: name[:first_name], last_name: name[:last_name], department_id: dept.id)
+  if prof.save
+    Alias.create(name: params[:professor], professor_id: prof.id)
+    halt 201, "Professor created"
+  else
+    halt 400, "Professor invalid"
+  end
 end
 # post a new score for a professor
 post '/fpo/1/:school/:department/:professor/scores' do
@@ -96,7 +89,7 @@ post '/fpo/1/:school/:department/:professor/scores' do
     #matched
     if professors.count == 1
       prof = professors.first
-      longer_name(prof, name[:first_name])
+      pick_longer_name(prof, name[:first_name])
       Alias.create(name: params[:professor], professor_id: prof.id)
     end
 
