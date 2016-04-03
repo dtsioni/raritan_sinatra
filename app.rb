@@ -15,9 +15,15 @@ require './alias_helper'
 get '/fpo/1/:school/:department/professors' do
   content_type :json
   professors = Array.new
-  profs_rows = School.find_by(name: params[:school]).departments.find_by(name: params[:department]).professors
-  profs_rows.each do |prof|
-    professors.push "#{prof.first_name} #{prof.last_name}"
+
+  school = School.find_by(name: params[:school])
+  halt 400, "School invalid" if school.nil?
+  dept = school.departments.find_by(name: params[:department])
+  halt 400, "Department invalid" if dept.nil?
+  profs = dept.professors
+
+  profs.each do |prof|
+    professors.push "#{prof.full_name}"
   end
   ret = Hash.new
   ret[:professors] = professors
@@ -26,8 +32,12 @@ end
 # return all departments from a school
 get '/fpo/1/:school/departments' do
   content_type :json
-  departments = Array.new()
-  School.find_by(name: params[:school]).departments.each do |dept|
+  departments = Array.new
+
+  school = School.find_by(name: params[:school])
+  halt 400, "School invalid" if school.nil?
+
+  school.departments.each do |dept|
     departments.push(dept.name)
   end
   ret = Hash.new
