@@ -38,19 +38,19 @@ describe "Scores" do
   let(:low_vote_1){ { score: { easiness: 1, clarity: 1, helpfulness: 1, interesting: 1, work: 1, organization: 1, pacing: 1 }, user_id: 1 }.to_json}
   let(:average_score){ { score: { easiness: "2.0", clarity: "3.0", helpfulness: "2.0", interesting: "1.5", work: "1.0", organization: "2.0", pacing: "1.5" }}.to_json}
 
-  it "should return status OK and their current score" do
+  it "should return status OK and a success message" do
     DatabaseCleaner.clean
     post("/fpo/1/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Sesh%20Venugopal/scores", vote, { "CONTENT_TYPE" => "application/json" })
     last_response.status.must_equal 201
-    last_response.body.must_equal score_1
+    last_response.body.must_equal "Score created"
   end
 
-  it "should return their average score" do
+  it "should average the scores together" do
     DatabaseCleaner.clean
     post("/fpo/1/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Sesh%20Venugopal/scores", vote, { "CONTENT_TYPE" => "application/json" })
     post("/fpo/1/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Sesh%20Venugopal/scores", low_vote, { "CONTENT_TYPE" => "application/json" })
     last_response.status.must_equal 201
-    last_response.body.must_equal average_score
+    Professor.first.score.must_equal average_score
   end
 
   it "should create a new professor and return their score" do
@@ -58,7 +58,7 @@ describe "Scores" do
     post("/fpo/1/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Brian%20Russell/scores", vote, { "CONTENT_TYPE" => "application/json" })
     Professor.count.must_equal 1
     last_response.status.must_equal 201
-    last_response.body.must_equal score_1
+    last_response.body.must_equal "Score created"
   end
 
   it "should create aliases for an existing professor, without making new professors" do
@@ -84,7 +84,7 @@ describe "Scores" do
     Professor.count.must_equal 1
     Alias.count.must_equal 6
     last_response.status.must_equal 201
-    last_response.body.must_equal score_1
+    last_response.body.must_equal "Score created"
   end
 
   it "should update your vote" do
@@ -93,6 +93,8 @@ describe "Scores" do
     post("/fpo/1/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Brian%20K%20Russell/scores", low_vote_1, { "CONTENT_TYPE" => "application/json" })
 
     last_response.status.must_equal 200
+    last_response.body.must_equal "Score updated"
+    Score.count.must_equal 1
   end
 end
 
