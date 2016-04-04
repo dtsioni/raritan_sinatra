@@ -23,8 +23,7 @@
 * Status 501 if there is an ambiguity in professor name
 * Status 201 if a new score is created
 * Status 200 if the user already voted for this professor, and their old score is updated
-* Returns the professors (updated) average score, in the format:
- { score: {easiness: 1, helpfulness: 1, clarity: 1, interesting: 1, work: 1, organization: 1, pacing: 1} }
+* Returns a success message
 
 ### GET /:school/:department/professors
 * Returns a list of all professors in the given department, in the format:
