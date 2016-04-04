@@ -22,6 +22,7 @@ get '/fpo/1/:school/:department/professors' do
 
   ret = Hash.new
   ret[:professors] = dept.professors.map{ |baz| baz.full_name }
+  status 200
   return JSON.generate ret
 end
 # return all departments from a school
@@ -33,6 +34,7 @@ get '/fpo/1/:school/departments' do
 
   ret = Hash.new
   ret[:departments] = school.departments.map{ |baz| baz.name }
+  status 200
   return JSON.generate ret
 end
 # create a professor or alias
@@ -53,7 +55,7 @@ post '/fpo/1/:school/:department/:professor' do
     prof = professors.first
     pick_longer_name(prof, name[:first_name])
     Alias.create(name: params[:professor], professor_id: prof.id)
-    halt 200, "Professor exists, alias created"
+    halt 200, "Professor exists"
   end
   #if professors.count = 0
   prof = Professor.new(first_name: name[:first_name], last_name: name[:last_name], department_id: dept.id)
@@ -109,16 +111,14 @@ post '/fpo/1/:school/:department/:professor/scores' do
     #has this user voted on this professor before?
     if previous_vote
       if previous_vote.update(score)
-        status 200
-        return prof.score
+        halt 200, "Score updated"
       else
         halt 400, "Score invalid"
       end
     end
     vote = Score.new(score.merge({professor_id: prof.id, user_id: user_id}))
     if vote.save
-      status 201
-      return prof.score
+      halt 201, "Score created"
     else
       halt 400, "Score invalid"
       return nil
