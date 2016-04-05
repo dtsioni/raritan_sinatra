@@ -152,6 +152,13 @@ describe "Professors" do
     get "/fpo/1/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/professors"
     last_response.body.must_equal prof_br
   end
+
+  it "should return invalid when two professors are passed in" do
+    DatabaseCleaner.clean
+    post "/fpo/1/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Russell%20%2CB%2C%20Venugopal%2C%20V"
+    last_response.status.must_equal 400
+    last_response.body.must_equal "Professor invalid"
+  end
 end
 
 
