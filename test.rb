@@ -36,7 +36,7 @@ describe "Scores" do
   let(:score_1){ { score: { easiness: "3.0", clarity: "5.0", helpfulness: "3.0", interesting: "2.0", work: "1.0", organization: "3.0", pacing: "2.0" }}.to_json}
   let(:low_vote){ { score: { easiness: 1, clarity: 1, helpfulness: 1, interesting: 1, work: 1, organization: 1, pacing: 1 }, user_id: 2 }.to_json}
   let(:low_vote_1){ { score: { easiness: 1, clarity: 1, helpfulness: 1, interesting: 1, work: 1, organization: 1, pacing: 1 }, user_id: 1 }.to_json}
-  let(:average_score){ { score: { easiness: "2.0", clarity: "3.0", helpfulness: "2.0", interesting: "1.5", work: "1.0", organization: "2.0", pacing: "1.5" }}.to_json}
+  let(:average_score){ { score: { easiness: 2.0, clarity: 3.0, helpfulness: 2.0, interesting: 1.5, work: 1.0, organization: 2.0, pacing: 1.5 }}.to_json}
 
   it "should return status OK and a success message" do
     DatabaseCleaner.clean
