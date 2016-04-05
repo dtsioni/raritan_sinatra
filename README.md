@@ -2,7 +2,7 @@
 ## Five Point Oh - Score API - Version 1
 
 ###### Namespace: /fpo/1
-
+##### Professor and department names are case insensitive
 ### POST /:school/:department/:professor
 * Creates a new professor (unless it exists)
   * Will create a new school and department as well if they are not found
