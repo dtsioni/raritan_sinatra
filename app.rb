@@ -121,7 +121,6 @@ post '/fpo/1/:school/:department/:professor/scores' do
       halt 201, "Score created"
     else
       halt 400, "Score invalid"
-      return nil
     end
   else
     halt 400

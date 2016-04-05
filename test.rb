@@ -96,6 +96,15 @@ describe "Scores" do
     last_response.body.must_equal "Score updated"
     Score.count.must_equal 1
   end
+
+  it "should post without traits" do
+    vote_2 = { score: { easiness: 3, clarity: 5, helpfulness: 3, interesting: 2, work: 1}, user_id: 2 }.to_json
+
+    DatabaseCleaner.clean
+    post("/fpo/1/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Sesh%20Venugopal/scores", vote, { "CONTENT_TYPE" => "application/json" })
+    last_response.status.must_equal 201
+    last_response.body.must_equal "Score created"
+  end
 end
 
 describe "Department" do
