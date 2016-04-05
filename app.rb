@@ -17,7 +17,7 @@ get '/fpo/1/:school/:department/professors' do
 
   school = School.find_by(name: params[:school])
   halt 400, "School invalid" if school.nil?
-  dept = school.departments.find_by(name: params[:department])
+  dept = school.departments.find_by(name: params[:department].downcase)
   halt 400, "Department invalid" if dept.nil?
 
   ret = Hash.new
@@ -41,7 +41,7 @@ end
 post '/fpo/1/:school/:department/:professor' do
   school = School.find_or_create_by(name: params[:school])
   halt 400, "School invalid" if school.nil?
-  dept = school.departments.find_or_create_by(name: params[:department])
+  dept = school.departments.find_or_create_by(name: params[:department].downcase)
   halt 400, "Department invalid" if dept.nil?
   #if this is already an alias, we know the professor exists
   halt 200, "Professor exists" if find_aliases(params[:professor], dept, school).count == 1
@@ -78,7 +78,7 @@ post '/fpo/1/:school/:department/:professor/scores' do
 
   school = School.find_or_create_by(name: params[:school])
   halt 400, "School invalid" if school.nil?
-  dept = school.departments.find_or_create_by(name: params[:department])
+  dept = school.departments.find_or_create_by(name: params[:department].downcase)
   halt 400, "Department invalid" if dept.nil?
 
   aliases = find_aliases(params[:professor], dept, school)

@@ -108,7 +108,7 @@ describe "Scores" do
 end
 
 describe "Department" do
-  let(:departments){ { departments: ["Computer Science", "Math"]}.to_json}
+  let(:departments){ { departments: ["computer science", "math"]}.to_json}
 
   it "should return a list of departments" do
     DatabaseCleaner.clean
@@ -118,6 +118,12 @@ describe "Department" do
     post("/fpo/1/Rutgers%20University%20-%20New%20Brunswick/Math/Vladimir%20Shtelen/scores", vote, { "CONTENT_TYPE" => "application/json" })
     get "/fpo/1/Rutgers%20University%20-%20New%20Brunswick/departments"
     last_response.body.must_equal departments
+  end
+
+  it "should downcase the name on save" do
+    DatabaseCleaner.clean
+    post "/fpo/1/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Brian%20Russell"
+    Department.first.name.must_equal "computer science"
   end
 end
 
