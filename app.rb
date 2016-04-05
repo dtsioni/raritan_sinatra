@@ -47,6 +47,8 @@ post '/fpo/1/:school/:department/:professor' do
   halt 200, "Professor exists" if find_aliases(params[:professor], dept, school).count == 1
   #find or create our new professor (including approximate names)
   name = parse_name(params[:professor])
+  halt 400, "Professor invalid" if name.empty?
+
   professors = match_name(name, dept)
 
   halt 501, "Professor ambiguity" if professors.count > 1
@@ -86,6 +88,7 @@ post '/fpo/1/:school/:department/:professor/scores' do
   #find or create our new professor (including approximate names)
   if prof.nil?
     name = parse_name(params[:professor])
+    halt 400, "Professor invalid" if name.empty?
     professors = match_name(name, dept)
 
     halt 501, "Professor ambiguity" if professors.count > 1

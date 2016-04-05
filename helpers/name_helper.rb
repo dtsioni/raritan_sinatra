@@ -1,6 +1,7 @@
 #takes a string of an unparsed name
 #returns hast, a first name, and last name
 #middle initials are included in first name
+#returns empty hash if it doesn't match
 def parse_name(string)
   name = string.downcase.gsub(/[^a-z0-9,\s]/i, '')
   name_hash = {first_name: "", last_name: ""}
@@ -34,6 +35,7 @@ def parse_name(string)
     name_hash[:last_name] = qux.third
     return name_hash
   end
+  return {}
 end
 #takes hash of name
 #returns an array of all professors that might approximately be this name
