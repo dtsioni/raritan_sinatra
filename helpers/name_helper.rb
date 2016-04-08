@@ -6,8 +6,8 @@ def parse_name(string)
   name = string.downcase.gsub(/[^a-z0-9,\s]/i, '')
   name_hash = {first_name: "", last_name: ""}
   #LAST_NAME
-  if name.match(/^[a-z]+$/)
-    name_hash[:last_name] = name
+  if name.match(/^[a-z]+,?$/)
+    name_hash[:last_name] = name.gsub(',', '')
     return name_hash
   end
   #LAST_NAME, FIRST_NAME

@@ -68,6 +68,7 @@ describe "Scores" do
     vote_5 = { score: { easiness: 3, clarity: 5, helpfulness: 3, interesting: 2, work: 1, organization: 3, pacing: 2  }, user_id: "5" }.to_json
     vote_6 = { score: { easiness: 3, clarity: 5, helpfulness: 3, interesting: 2, work: 1, organization: 3, pacing: 2  }, user_id: "6" }.to_json
     vote_7 = { score: { easiness: 3, clarity: 5, helpfulness: 3, interesting: 2, work: 1, organization: 3, pacing: 2  }, user_id: "7" }.to_json
+    vote_8 = { score: { easiness: 3, clarity: 5, helpfulness: 3, interesting: 2, work: 1, organization: 3, pacing: 2  }, user_id: "8" }.to_json
     DatabaseCleaner.clean
     #Russell
     #Brian K Russell
@@ -81,8 +82,9 @@ describe "Scores" do
     post("/fpo/1/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Russell%2C%20Brian/scores", vote_4, { "CONTENT_TYPE" => "application/json" })
     post("/fpo/1/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Russell%2C%20B/scores", vote_5, { "CONTENT_TYPE" => "application/json" })
     post("/fpo/1/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Russell%2C%20B./scores", vote_6, { "CONTENT_TYPE" => "application/json" })
+    post("/fpo/1/Rutgers%20University%20-%20New%20Brunswick/Computer%20Science/Russell%2C/scores", vote_8, { "CONTENT_TYPE" => "application/json" })
     Professor.count.must_equal 1
-    Alias.count.must_equal 6
+    Alias.count.must_equal 7
     last_response.status.must_equal 201
     last_response.body.must_equal "Score created"
   end
